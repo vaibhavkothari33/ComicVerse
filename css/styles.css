@@ -768,6 +768,59 @@ a:hover {
     text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
 }
 
+/* Wishlist Button */
+.wishlist-btn {
+    position: absolute;
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
+    width: 40px;
+    height: 40px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid var(--color-text);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--color-text);
+    z-index: 10;
+    transition: all var(--transition-speed) ease;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.comic-card:hover .wishlist-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.wishlist-btn:hover {
+    background: rgba(255, 0, 0, 0.9);
+    border-color: var(--color-primary);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+}
+
+.wishlist-btn.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    opacity: 1;
+    transform: scale(1);
+    animation: pulse 2s infinite;
+}
+
+.wishlist-btn.active::before {
+    content: '♥';
+    color: var(--color-text);
+}
+
+.wishlist-btn:not(.active)::before {
+    content: '♡';
+    color: var(--color-text);
+}
+
 /* ============================================
    Buttons
    ============================================ */
@@ -928,6 +981,11 @@ a:hover {
 .comic-card:nth-child(n+7) { animation-delay: 0.7s; }
 
 @media (max-width: 768px) {
+    .wishlist-btn {
+        opacity: 1;
+        transform: scale(1);
+    }
+    
     :root {
         --header-height: 60px;
     }

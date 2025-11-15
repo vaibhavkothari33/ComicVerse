@@ -11,6 +11,7 @@
  */
 
 const CART_STORAGE_KEY = 'comicverse_cart';
+const WISHLIST_STORAGE_KEY = 'comicverse_wishlist';
 
 /**
  * Get the current cart from localStorage
@@ -193,9 +194,134 @@ function debounce(func, wait) {
 }
 
 /**
+ * Wishlist Management Functions
+ * Uses localStorage to persist wishlist data
+ */
+
+/**
+ * Get the current wishlist from localStorage
+ * @returns {Array} - Array of comic IDs
+ */
+function getWishlist() {
+    const wishlistJson = localStorage.getItem(WISHLIST_STORAGE_KEY);
+    return wishlistJson ? JSON.parse(wishlistJson) : [];
+}
+
+/**
+ * Save the wishlist to localStorage
+ * @param {Array} wishlist - Array of comic IDs
+ */
+function saveWishlist(wishlist) {
+    localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(wishlist));
+}
+
+/**
+ * Add a comic to the wishlist
+ * @param {string} comicId - The ID of the comic to add
+ * @returns {boolean} - True if added, false if already exists
+ */
+function addToWishlist(comicId) {
+    const wishlist = getWishlist();
+    
+    if (wishlist.includes(comicId)) {
+        return false; // Already in wishlist
+    }
+    
+    wishlist.push(comicId);
+    saveWishlist(wishlist);
+    updateWishlistBadge();
+    return true;
+}
+
+/**
+ * Remove a comic from the wishlist
+ * @param {string} comicId - The ID of the comic to remove
+ * @returns {boolean} - True if removed, false if not found
+ */
+function removeFromWishlist(comicId) {
+    const wishlist = getWishlist();
+    const filteredWishlist = wishlist.filter(id => id !== comicId);
+    
+    if (filteredWishlist.length === wishlist.length) {
+        return false; // Not in wishlist
+    }
+    
+    saveWishlist(filteredWishlist);
+    updateWishlistBadge();
+    return true;
+}
+
+/**
+ * Check if a comic is in the wishlist
+ * @param {string} comicId - The ID of the comic to check
+ * @returns {boolean} - True if in wishlist, false otherwise
+ */
+function isInWishlist(comicId) {
+    const wishlist = getWishlist();
+    return wishlist.includes(comicId);
+}
+
+/**
+ * Toggle wishlist status (add if not present, remove if present)
+ * @param {string} comicId - The ID of the comic to toggle
+ * @returns {boolean} - True if added, false if removed
+ */
+function toggleWishlist(comicId) {
+    if (isInWishlist(comicId)) {
+        removeFromWishlist(comicId);
+        return false;
+    } else {
+        addToWishlist(comicId);
+        return true;
+    }
+}
+
+/**
+ * Get wishlist items as full comic objects
+ * @returns {Array} - Array of comic objects
+ */
+function getWishlistComics() {
+    const wishlist = getWishlist();
+    return wishlist.map(id => getComicById(id)).filter(comic => comic !== null);
+}
+
+/**
+ * Update the wishlist badge in the navigation
+ */
+function updateWishlistBadge() {
+    const badge = document.getElementById('wishlist-badge');
+    if (badge) {
+        const count = getWishlist().length;
+        badge.textContent = count;
+        badge.style.display = count > 0 ? 'inline-block' : 'none';
+    }
+    
+    // Update all wishlist buttons on the page
+    updateWishlistButtons();
+}
+
+/**
+ * Update wishlist button states on the page
+ */
+function updateWishlistButtons() {
+    const wishlist = getWishlist();
+    document.querySelectorAll('.wishlist-btn').forEach(btn => {
+        const comicId = btn.getAttribute('data-comic-id');
+        if (comicId && wishlist.includes(comicId)) {
+            btn.classList.add('active');
+            btn.setAttribute('aria-label', 'Remove from wishlist');
+        } else {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-label', 'Add to wishlist');
+        }
+    });
+}
+
+/**
  * Initialize cart badge on page load
  */
 document.addEventListener('DOMContentLoaded', () => {
     updateCartBadge();
+    updateWishlistBadge();
 });
 

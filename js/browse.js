@@ -71,11 +71,15 @@ function displayComics(comics) {
 function createComicCard(comic) {
     const card = document.createElement('div');
     card.className = 'comic-card';
-    card.addEventListener('click', () => {
-        window.location.href = `comic-detail.html?id=${comic.id}`;
-    });
+    card.setAttribute('data-comic-id', comic.id);
+    
+    const isWishlisted = isInWishlist(comic.id);
     
     card.innerHTML = `
+        <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" 
+                data-comic-id="${comic.id}" 
+                aria-label="${isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}">
+        </button>
         <div class="comic-card-image">
             <img src="${comic.coverImage}" alt="${comic.title}" 
                  onerror="this.parentElement.innerHTML='${comic.title.substring(0, 20)}...'"
@@ -87,6 +91,33 @@ function createComicCard(comic) {
             <p class="comic-card-price">${formatPrice(comic.price)}</p>
         </div>
     `;
+    
+    // Add click handlers
+    const wishlistBtn = card.querySelector('.wishlist-btn');
+    
+    // Wishlist button handler
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleWishlist(comic.id);
+            updateWishlistButtons();
+            // Update this button's state
+            if (isInWishlist(comic.id)) {
+                wishlistBtn.classList.add('active');
+                wishlistBtn.setAttribute('aria-label', 'Remove from wishlist');
+            } else {
+                wishlistBtn.classList.remove('active');
+                wishlistBtn.setAttribute('aria-label', 'Add to wishlist');
+            }
+        });
+    }
+    
+    // Navigate to detail page on card click (except wishlist button)
+    card.addEventListener('click', (e) => {
+        if (!e.target.closest('.wishlist-btn')) {
+            window.location.href = `comic-detail.html?id=${comic.id}`;
+        }
+    });
     
     return card;
 }
