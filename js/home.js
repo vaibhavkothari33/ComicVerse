@@ -10,6 +10,7 @@
  */
 document.addEventListener('DOMContentLoaded', () => {
     initializeCarousel();
+    loadProductCategories();
     loadNewReleases();
     loadPopularSeries();
     loadPublisherSpotlights();
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /**
- * Initialize the hero carousel with featured comics
+ * Initialize the hero carousel with slider images
  */
 function initializeCarousel() {
     const carouselContainer = document.getElementById('carousel-container');
@@ -27,44 +28,41 @@ function initializeCarousel() {
     
     if (!carouselContainer) return;
     
-    // Get featured comics
-    const featuredComics = getFeaturedComics();
+    // Array of slider images
+    const sliderImages = [
+        '../images/slider-1.png',
+        '../images/slider-2.png',
+        '../images/slider-3.png'
+    ];
     
-    if (featuredComics.length === 0) {
-        carouselContainer.innerHTML = '<div class="carousel-slide active"><div class="carousel-content"><h2>Welcome to ComicVerse Hub</h2><p>Your ultimate destination for comic books!</p></div></div>';
-        return;
-    }
-    
-    // Create carousel slides
-    featuredComics.forEach((comic, index) => {
+    // Create carousel slides for each image
+    sliderImages.forEach((imageSrc, index) => {
         // Create slide
         const slide = document.createElement('div');
         slide.className = `carousel-slide ${index === 0 ? 'active' : ''}`;
         slide.setAttribute('data-slide-index', index);
         
-        // Create slide content
+        // Create slide content with just the image
         slide.innerHTML = `
-            <img src="${comic.coverImage}" alt="${comic.title}" onerror="this.style.display='none'">
-            <div class="carousel-content">
-                <h2>${comic.title}</h2>
-                <p>${comic.synopsis.substring(0, 150)}...</p>
-                <a href="comic-detail.html?id=${comic.id}" class="carousel-btn">View Details</a>
-            </div>
+            <img src="${imageSrc}" alt="ComicVerse Hub Banner ${index + 1}" style="width: 100%; height: 100%; object-fit: cover;">
         `;
         
         carouselContainer.appendChild(slide);
         
         // Create indicator
-        const indicator = document.createElement('div');
-        indicator.className = `carousel-indicator ${index === 0 ? 'active' : ''}`;
-        indicator.setAttribute('data-slide-index', index);
-        indicator.addEventListener('click', () => goToSlide(index));
-        indicatorsContainer.appendChild(indicator);
+        if (indicatorsContainer) {
+            const indicator = document.createElement('div');
+            indicator.className = `carousel-indicator ${index === 0 ? 'active' : ''}`;
+            indicator.setAttribute('data-slide-index', index);
+            indicator.addEventListener('click', () => goToSlide(index));
+            indicatorsContainer.appendChild(indicator);
+        }
     });
     
     // Set up carousel controls
     let currentSlide = 0;
-    const totalSlides = featuredComics.length;
+    const totalSlides = sliderImages.length;
+    let carouselInterval;
     
     function goToSlide(index) {
         // Remove active class from all slides and indicators
@@ -98,15 +96,30 @@ function initializeCarousel() {
     
     // Attach event listeners
     if (nextButton) {
-        nextButton.addEventListener('click', nextSlide);
+        nextButton.addEventListener('click', () => {
+            nextSlide();
+            resetCarouselInterval();
+        });
     }
     
     if (prevButton) {
-        prevButton.addEventListener('click', prevSlide);
+        prevButton.addEventListener('click', () => {
+            prevSlide();
+            resetCarouselInterval();
+        });
     }
     
     // Auto-advance carousel every 5 seconds
-    let carouselInterval = setInterval(nextSlide, 5000);
+    function startCarouselInterval() {
+        carouselInterval = setInterval(nextSlide, 5000);
+    }
+    
+    function resetCarouselInterval() {
+        clearInterval(carouselInterval);
+        startCarouselInterval();
+    }
+    
+    startCarouselInterval();
     
     // Pause on hover
     const heroCarousel = document.getElementById('hero-carousel');
@@ -116,9 +129,44 @@ function initializeCarousel() {
         });
         
         heroCarousel.addEventListener('mouseleave', () => {
-            carouselInterval = setInterval(nextSlide, 5000);
+            startCarouselInterval();
         });
     }
+}
+
+/**
+ * Load and display product categories
+ */
+function loadProductCategories() {
+    const grid = document.getElementById('product-categories-grid');
+    if (!grid) return;
+    
+    const categories = [
+       
+    ];
+    
+    categories.forEach(category => {
+        const card = document.createElement('div');
+        card.className = `product-category-card ${category.class}`;
+        
+        card.innerHTML = `
+            <div class="product-category-content">
+                <div class="product-category-images">
+                    ${category.images.map(img => 
+                        `<img src="${img}" alt="${category.name}" class="product-category-image" onerror="this.style.display='none'">`
+                    ).join('')}
+                </div>
+                <div class="product-category-label">${category.name}</div>
+            </div>
+        `;
+        
+        // Add click handler to navigate to browse page with category filter
+        card.addEventListener('click', () => {
+            window.location.href = `browse.html?category=${encodeURIComponent(category.name)}`;
+        });
+        
+        grid.appendChild(card);
+    });
 }
 
 /**

@@ -9,18 +9,18 @@
    CSS Variables (Theme)
    ============================================ */
 :root {
-    /* Color Palette - Dark Comic Book Theme */
+    /* Color Palette - Light Theme (Default) */
     --color-primary: #ff0000;
     --color-primary-dark: #cc0000;
     --color-secondary: #0066ff;
     --color-accent: #ffd700;
-    --color-dark: #0a0a0a;
-    --color-dark-gray: #1a1a1a;
-    --color-medium-gray: #2a2a2a;
-    --color-light-gray: #3a3a3a;
-    --color-text: #ffffff;
-    --color-text-muted: #cccccc;
-    --color-border: #444444;
+    --color-dark: #ffffff;
+    --color-dark-gray: #f5f5f5;
+    --color-medium-gray: #e0e0e0;
+    --color-light-gray: #d0d0d0;
+    --color-text: #000000;
+    --color-text-muted: #333333;
+    --color-border: #cccccc;
     
     /* Typography */
     --font-primary: 'Arial', 'Helvetica', sans-serif;
@@ -41,6 +41,21 @@
     --transition-speed: 0.3s;
     --transition-slow: 0.6s;
     --transition-fast: 0.15s;
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+    --color-primary: #ff0000;
+    --color-primary-dark: #cc0000;
+    --color-secondary: #0066ff;
+    --color-accent: #ffd700;
+    --color-dark: #0a0a0a;
+    --color-dark-gray: #1a1a1a;
+    --color-medium-gray: #2a2a2a;
+    --color-light-gray: #3a3a3a;
+    --color-text: #ffffff;
+    --color-text-muted: #cccccc;
+    --color-border: #444444;
 }
 
 /* ============================================
@@ -1107,6 +1122,261 @@ a:hover {
     
     .carousel-content h2 {
         font-size: 1.5rem;
+    }
+}
+
+/* ============================================
+   Theme Switch Toggle
+   ============================================ */
+/* The switch - the box around the slider */
+.switch {
+    font-size: 17px;
+    position: relative;
+    display: inline-block;
+    width: 4em;
+    height: 2.2em;
+    border-radius: 30px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2a2a2a;
+    transition: 0.4s;
+    border-radius: 30px;
+    overflow: hidden;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 1.2em;
+    width: 1.2em;
+    border-radius: 20px;
+    left: 0.5em;
+    bottom: 0.5em;
+    transition: 0.4s;
+    transition-timing-function: cubic-bezier(0.81, -0.04, 0.38, 1.5);
+    box-shadow: inset 8px -4px 0px 0px #fff;
+}
+
+.switch input:checked + .slider {
+    background-color: #00a6ff;
+}
+
+.switch input:checked + .slider:before {
+    transform: translateX(1.8em);
+    box-shadow: inset 15px -4px 0px 15px #ffcf48;
+}
+
+.star {
+    background-color: #fff;
+    border-radius: 50%;
+    position: absolute;
+    width: 5px;
+    transition: all 0.4s;
+    height: 5px;
+}
+
+.star_1 {
+    left: 2.5em;
+    top: 0.5em;
+}
+
+.star_2 {
+    left: 2.2em;
+    top: 1.2em;
+}
+
+.star_3 {
+    left: 3em;
+    top: 0.9em;
+}
+
+.switch input:checked ~ .slider .star {
+    opacity: 0;
+}
+
+.cloud {
+    width: 3.5em;
+    position: absolute;
+    bottom: -1.4em;
+    left: -1.1em;
+    opacity: 0;
+    transition: all 0.4s;
+}
+
+.switch input:checked ~ .slider .cloud {
+    opacity: 1;
+}
+
+/* Theme toggle in navbar */
+.header-container .switch {
+    margin-left: var(--spacing-md);
+}
+
+/* ============================================
+   Product Categories Grid
+   ============================================ */
+.product-categories-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.product-category-card {
+    position: relative;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+    aspect-ratio: 1;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: var(--spacing-md);
+    min-height: 250px;
+}
+
+.product-category-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0.6) 100%);
+    z-index: 1;
+    transition: opacity var(--transition-speed) ease;
+}
+
+.product-category-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.product-category-card:hover::before {
+    opacity: 0.8;
+}
+
+.product-category-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.product-category-images {
+    display: flex;
+    gap: var(--spacing-xs);
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: var(--spacing-sm);
+}
+
+.product-category-image {
+    width: 60px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform var(--transition-speed) ease;
+}
+
+.product-category-card:hover .product-category-image {
+    transform: scale(1.1) rotate(2deg);
+}
+
+.product-category-label {
+    color: var(--color-text);
+    font-weight: bold;
+    font-size: 1.1rem;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Category-specific background gradients */
+.category-dc {
+    background: linear-gradient(135deg, #0066ff 0%, #0044cc 100%);
+}
+
+.category-marvel {
+    background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+}
+
+.category-toys {
+    background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+}
+
+.category-collectibles {
+    background: linear-gradient(135deg, #e91e63 0%, #c2185b 100%);
+}
+
+.category-trading-cards {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+}
+
+.category-graphic-novels {
+    background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+}
+
+.category-posters {
+    background: linear-gradient(135deg, #673ab7 0%, #512da8 100%);
+}
+
+.category-mangas {
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+}
+
+@media (max-width: 968px) {
+    .product-categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+    }
+    
+    .product-category-card {
+        min-height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .product-categories-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .product-category-card {
+        min-height: 180px;
+    }
+    
+    .product-category-image {
+        width: 50px;
+        height: 70px;
+    }
+    
+    .product-category-label {
+        font-size: 0.95rem;
     }
 }
 

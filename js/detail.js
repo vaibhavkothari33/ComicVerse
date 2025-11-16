@@ -84,7 +84,7 @@ function displayComicDetail(comic) {
                 <!-- Price Section -->
                 <div class="price-section">
                     <div class="comic-price-large">${formatPrice(comic.price)}</div>
-                    <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 5px;">Free shipping on orders over $25</div>
+                    <div style="font-size: 0.8rem; color: var(--color-text-muted); margin-top: 5px;">Free shipping on orders over ₹2,000</div>
                 </div>
                 
                 <!-- Wishlist Section -->
