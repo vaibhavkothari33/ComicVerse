@@ -212,6 +212,15 @@ function displayComicDetail(comic) {
     document.title = `${comic.title} | ComicVerse Hub`;
 }
 
+// Store event handlers to allow removal
+let quantityHandlers = {
+    decreaseHandler: null,
+    increaseHandler: null,
+    inputHandler: null,
+    blurHandler: null,
+    keydownHandler: null
+};
+
 /**
  * Setup quantity controls (increment/decrement buttons)
  */
@@ -221,6 +230,23 @@ function setupQuantityControls() {
     const increaseBtn = document.getElementById('quantity-increase');
     
     if (!quantityInput) return;
+    
+    // Remove old event listeners if they exist
+    if (decreaseBtn && quantityHandlers.decreaseHandler) {
+        decreaseBtn.removeEventListener('click', quantityHandlers.decreaseHandler);
+    }
+    if (increaseBtn && quantityHandlers.increaseHandler) {
+        increaseBtn.removeEventListener('click', quantityHandlers.increaseHandler);
+    }
+    if (quantityHandlers.inputHandler) {
+        quantityInput.removeEventListener('input', quantityHandlers.inputHandler);
+    }
+    if (quantityHandlers.blurHandler) {
+        quantityInput.removeEventListener('blur', quantityHandlers.blurHandler);
+    }
+    if (quantityHandlers.keydownHandler) {
+        quantityInput.removeEventListener('keydown', quantityHandlers.keydownHandler);
+    }
     
     // Update button states based on current value
     const updateButtonStates = () => {
@@ -233,32 +259,26 @@ function setupQuantityControls() {
         }
     };
     
-    // Decrease button
-    if (decreaseBtn) {
-        decreaseBtn.addEventListener('click', () => {
-            const currentValue = parseInt(quantityInput.value) || 1;
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-                updateButtonStates();
-                quantityInput.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-        });
-    }
+    // Decrease button handler
+    quantityHandlers.decreaseHandler = () => {
+        const currentValue = parseInt(quantityInput.value) || 1;
+        if (currentValue > 1) {
+            quantityInput.value = currentValue - 1;
+            updateButtonStates();
+        }
+    };
     
-    // Increase button
-    if (increaseBtn) {
-        increaseBtn.addEventListener('click', () => {
-            const currentValue = parseInt(quantityInput.value) || 1;
-            if (currentValue < 99) {
-                quantityInput.value = currentValue + 1;
-                updateButtonStates();
-                quantityInput.dispatchEvent(new Event('input', { bubbles: true }));
-            }
-        });
-    }
+    // Increase button handler
+    quantityHandlers.increaseHandler = () => {
+        const currentValue = parseInt(quantityInput.value) || 1;
+        if (currentValue < 99) {
+            quantityInput.value = currentValue + 1;
+            updateButtonStates();
+        }
+    };
     
-    // Input validation
-    quantityInput.addEventListener('input', (e) => {
+    // Input validation handler
+    quantityHandlers.inputHandler = (e) => {
         let value = parseInt(e.target.value) || 1;
         
         if (value < 1) {
@@ -269,10 +289,10 @@ function setupQuantityControls() {
         
         e.target.value = value;
         updateButtonStates();
-    });
+    };
     
-    // Handle paste and other edge cases
-    quantityInput.addEventListener('blur', (e) => {
+    // Blur handler
+    quantityHandlers.blurHandler = (e) => {
         let value = parseInt(e.target.value) || 1;
         
         if (value < 1) {
@@ -285,18 +305,35 @@ function setupQuantityControls() {
         
         e.target.value = value;
         updateButtonStates();
-    });
+    };
     
-    // Keyboard shortcuts
-    quantityInput.addEventListener('keydown', (e) => {
+    // Keyboard shortcuts handler
+    quantityHandlers.keydownHandler = (e) => {
         if (e.key === 'ArrowUp') {
             e.preventDefault();
-            increaseBtn?.click();
+            if (increaseBtn) {
+                quantityHandlers.increaseHandler();
+            }
         } else if (e.key === 'ArrowDown') {
             e.preventDefault();
-            decreaseBtn?.click();
+            if (decreaseBtn) {
+                quantityHandlers.decreaseHandler();
+            }
         }
-    });
+    };
+    
+    // Attach event listeners
+    if (decreaseBtn) {
+        decreaseBtn.addEventListener('click', quantityHandlers.decreaseHandler);
+    }
+    
+    if (increaseBtn) {
+        increaseBtn.addEventListener('click', quantityHandlers.increaseHandler);
+    }
+    
+    quantityInput.addEventListener('input', quantityHandlers.inputHandler);
+    quantityInput.addEventListener('blur', quantityHandlers.blurHandler);
+    quantityInput.addEventListener('keydown', quantityHandlers.keydownHandler);
     
     // Initialize button states
     updateButtonStates();
